@@ -30,13 +30,13 @@ function compareObj(obj1, obj2) {
   if (
     typeof obj1 !== "object" ||
     typeof obj2 !== "object" ||
-    Object.keys(obj1).length === 0 ||
-    Object.keys(obj2).length === 0 ||
     Object.keys(obj1).length !== Object.keys(obj2).length
   ) {
     return false;
   }
-
+  
+  if (Object.keys(obj1).length === 0) return true;
+  
   for (const key in obj1) {
     // Kiểm tra xem key của obj1 có trong obj2 hay không
     if (!key in obj2) return false;
