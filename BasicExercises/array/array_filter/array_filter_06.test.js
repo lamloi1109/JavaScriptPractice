@@ -14,7 +14,7 @@ describe('findAllNumbers(numberList)', () => {
     expect(findAllNumbers([2, 22, 231, 421])).toStrictEqual([]);
   });
   it('should return [] if list has number start with odd', () => {
-    expect(findAllNumbers([234, 123, 421])).toStrictEqual([123]);
+    expect(findAllNumbers([234, -123, 421])).toStrictEqual([-123]);
   });
 });
 
