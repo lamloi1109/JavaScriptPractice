@@ -14,3 +14,6 @@
 // Ctrl + H thay thế
 // Ctrl + P tìm kiếm file
 // Ctrl + \ Chia màn màn hình
+
+// Khi chia màn hình thành left side và right side 
+// Dùng Ctrl + 1 và Ctrl + 2 để di chuyển con trỏ chuột giữa hai màn hình

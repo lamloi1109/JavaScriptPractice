@@ -7,20 +7,76 @@
 // #####
 // ######
 // #######
-// It may be useful to know that you can find the length of a string by writing .length after it.
+function printTriangle() {
+  let triangle = '';
+  Array.from({ length: 8 }).forEach((element) => {
+    triangle += '#';
+    console.log(triangle);
+  });
+}
+printTriangle();
 
+// It may be useful to know that you can find the length of a string by writing .length after it.
+function getLengthOfString(str) {
+  if (typeof str !== 'string') {
+    return -1;
+  }
+  return str.length;
+}
+console.log(getLengthOfString('Lam Phuoc Loi'));
 // FizzBuzz Write a program that uses console.log to print all the numbers from 1 to 100, with two exceptions. For numbers divisible by 3, print "Fizz" instead of the number, and for numbers divisible by 5 (and not 3), print "Buzz" instead. When you have that working, modify your program to print "FizzBuzz" for numbers that are divisible by both 3 and 5 (and still print "Fizz" or "Buzz"for numbers divisible by only one of those).
 
+function fizzBuzz() {
+  Array.from({ length: 100 })
+    .map((number, index) => index + 1)
+    .forEach((number) => {
+      // 3 5
+      if (number % 3 === 0 && number % 5 === 0) {
+        console.log('FizzBuzz');
+      }
+      // 3
+      if (number % 3 === 0) {
+        console.log('Fizz');
+      }
+      // 5
+      if (number % 5 === 0) {
+        console.log('Buzz');
+      }
+    });
+}
+fizzBuzz();
 // Maximum Math.max returns its largest argument. We can build something like that now. Write a function findMax that takes three arguments and returns their maxiumum. Without method Math.max method.
 
-// console.log(findMax(0, 10, 5));
+function findMax(...numberList) {
+  let max = Number.MIN_SAFE_INTEGER;
+  numberList.forEach((number) => {
+    if (number > max) {
+      max = number;
+    }
+  });
+  return max;
+}
+
+console.log(findMax(0, 10, 5));
 // 10
-// console.log(findMax(0, -10,-2));
+console.log(findMax(0, -10, -2));
 // 0
 
 // Reversing an array Arrays have a reverse method which changes the array by inverting the order in which its elements appear. For this exercise, write a function, reverseArray. The reverseArray, takes an array as argument and produces a new array that has the same elements in the inverse order. Without reverse method.
 
-// console.log(reverseArray(["A", "B", "C"]));
+function reverseArray(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) {
+    return undefined;
+  }
+  const newArr = [];
+  for (let index = arr.length - 1; index >= 0; index--) {
+    const element = arr[index];
+    newArr.push(element);
+  }
+  return newArr;
+}
+
+console.log(reverseArray(["A", "B", "C"]));
 //  ["C", "B", "A"]
 
 // Modifying an array Write a function called modifyArray takes array as parameter and modifies the fifth item of the array and returns the array. If the array length is less than five it return ‘item not found’.
