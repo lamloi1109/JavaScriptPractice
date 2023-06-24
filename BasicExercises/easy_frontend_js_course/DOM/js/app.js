@@ -2,33 +2,28 @@ function createTodoElement(todoItem) {
   if (!todoItem) return null;
 
   const templateElement = document.getElementById('todoTemplate');
-  if (!templateElement) {
-    return null;
-  }
+  if (!templateElement) return null;
 
   const itemElement = templateElement.content.firstElementChild.cloneNode(true);
-
-  const titleElement = itemElement.querySelector('.todo__title');
   itemElement.dataset.id = todoItem.id;
   itemElement.dataset.status = todoItem.status;
 
+  const editButton = itemElement.querySelector('button.edit');
+  const markAsDoneButton = itemElement.querySelector('button.mark-as-done');
+  const removeButton = itemElement.querySelector('button.remove');
   const alertElement = itemElement.querySelector('div.todo.alert');
+  const titleElement = itemElement.querySelector('.todo__title');
 
-  if (!alertElement) {
+  if (!alertElement || !titleElement || !editButton || !markAsDoneButton || !removeButton)
     return null;
-  }
 
   const alertClass = todoItem.status === 'pending' ? 'alert-secondary' : 'alert-success';
+
   alertElement.classList.add(alertClass);
+  titleElement.textContent = todoItem.title;
 
-  if (titleElement) {
-    titleElement.textContent = todoItem.title;
-  }
-
-  const editButton = itemElement.querySelector('button.edit');
   handleEditButton(editButton, todoItem);
 
-  const markAsDoneButton = itemElement.querySelector('button.mark-as-done');
   handleMarkAsDoneButton({
     markAsDoneButton: markAsDoneButton,
     itemElement: itemElement,
@@ -36,8 +31,7 @@ function createTodoElement(todoItem) {
     todoItem: todoItem,
   });
 
-  const removeButton = itemElement.querySelector('button.remove');
-  handleEditButton(removeButton);
+  handleRemoveButton(removeButton, todoItem, itemElement);
 
   return itemElement;
 }
@@ -79,21 +73,20 @@ function handleTodoFormSubmit(event) {
 
   const isEdit = Boolean(todoForm.dataset.id);
 
-  isEdit ? editTodo(todoForm, todoText.value) : addTodo(todoText.value);
+  isEdit ? editTodo(todoForm, todoText.value) : addTodo(todoForm, todoText.value);
 
   // reset form
   const selectElement = todoForm.querySelector('.selectTodo');
   if (!selectElement) return;
 
-  selectElement.classList.add('d-none');
   delete todoForm.dataset.id;
   todoForm.reset();
   const todoButton = todoForm.querySelector('button.btn');
   todoButton.textContent = 'Save Todo';
 }
 
-function handleMarkAsDoneButton({ markAsDoneButton, itemElement, alertElement, todoItem }) {
-  if (!markAsDoneButton || !alertElement || !itemElement) {
+function updateCurrentStatusMarkAsDoneButton(itemElement, markAsDoneButton) {
+  if (!itemElement || !markAsDoneButton) {
     return;
   }
   const currentStatus = itemElement.dataset.status;
@@ -103,6 +96,14 @@ function handleMarkAsDoneButton({ markAsDoneButton, itemElement, alertElement, t
   markAsDoneButton.classList.remove('btn-success', 'btn-secondary');
   markAsDoneButton.classList.add(currentButtonClass);
   markAsDoneButton.textContent = currentButtonText;
+}
+
+function handleMarkAsDoneButton({ markAsDoneButton, itemElement, alertElement, todoItem }) {
+  if (!markAsDoneButton || !alertElement || !itemElement) {
+    return;
+  }
+
+  updateCurrentStatusMarkAsDoneButton(itemElement, markAsDoneButton);
 
   markAsDoneButton.addEventListener('click', () => {
     // Lấy current status một lần nữa vì ko có live attributes
@@ -131,9 +132,8 @@ function handleMarkAsDoneButton({ markAsDoneButton, itemElement, alertElement, t
   });
 }
 
-function handleRemoveButton(removeButton, todoItem) {
+function handleRemoveButton(removeButton, todoItem, itemElement) {
   if (!removeButton) return;
-
   removeButton.addEventListener('click', () => {
     const todoList = getTodoList();
     const newTodoList = todoList.filter((item) => item.id !== todoItem.id);
@@ -156,16 +156,23 @@ function handleEditButton(editButton, todoItem) {
   });
 }
 
-function addTodo(todoValue) {
+function addTodo(todoForm, todoValue) {
+  if (!todoForm) {
+    return;
+  }
   // validate todo value
   // ...
 
   const todoList = getTodoList();
+  const selectTodo = todoForm.querySelector('.selectTodo');
+  if (!selectTodo) return;
+
   const newTodo = {
     id: new Date().getTime(),
     title: todoValue,
-    status: 'pending',
+    status: selectTodo.value,
   };
+
   todoList.push(newTodo);
   localStorage.setItem('todo_list', JSON.stringify(todoList));
 
@@ -203,9 +210,11 @@ function editTodo(todoForm, todoValue) {
   if (!titleElement) return;
 
   titleElement.textContent = todoValue;
+  itemElement.dataset.status = selectTodo.value;
 
   const markAsDoneButton = itemElement.querySelector('button.mark-as-done');
   if (!markAsDoneButton) return;
+  updateCurrentStatusMarkAsDoneButton(itemElement, markAsDoneButton);
 }
 
 function populateTodoForm(todoItem) {
@@ -227,8 +236,7 @@ function populateTodoForm(todoItem) {
   // get select element
   const selectElement = todoForm.querySelector('.selectTodo');
   if (!selectElement) return;
-  
-  selectElement.classList.remove('d-none');
+
   const optionListElement = selectElement.querySelectorAll('.selectTodo > option');
 
   if (!optionListElement) return;
