@@ -1,4 +1,4 @@
-function createTodoElement(todoItem) {
+function createTodoElement(todoItem, params) {
   if (!todoItem) return null;
 
   const templateElement = document.getElementById('todoTemplate');
@@ -7,6 +7,7 @@ function createTodoElement(todoItem) {
   const itemElement = templateElement.content.firstElementChild.cloneNode(true);
   itemElement.dataset.id = todoItem.id;
   itemElement.dataset.status = todoItem.status;
+  itemElement.hidden = false;
 
   const editButton = itemElement.querySelector('button.edit');
   const markAsDoneButton = itemElement.querySelector('button.mark-as-done');
@@ -22,6 +23,9 @@ function createTodoElement(todoItem) {
   alertElement.classList.add(alertClass);
   titleElement.textContent = todoItem.title;
 
+  itemElement.hidden = !isMatch(itemElement, params);
+
+
   handleEditButton(editButton, todoItem);
 
   handleMarkAsDoneButton({
@@ -36,7 +40,7 @@ function createTodoElement(todoItem) {
   return itemElement;
 }
 
-function renderTodoList(todoListElementId, todoList) {
+function renderTodoList(todoListElementId, todoList, params) {
   if (!Array.isArray(todoList) || todoList.length === 0) {
     return;
   }
@@ -45,7 +49,7 @@ function renderTodoList(todoListElementId, todoList) {
   if (!todoListElement) return;
 
   for (const item of todoList) {
-    const itemElement = createTodoElement(item);
+    const itemElement = createTodoElement(item, params);
     todoListElement.appendChild(itemElement);
   }
 }
@@ -249,10 +253,34 @@ function populateTodoForm(todoItem) {
   });
 }
 
+function isMatchSearch(itemElement, searchTerm) {
+  if (!itemElement) return false;
+  if (searchTerm === '') return true;
+  const titleElement = itemElement.querySelector('p.todo__title');
+  if (!titleElement) return false;
+
+  return titleElement.textContent.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+}
+
+function isMatchFilter(itemElement, status) {
+  if (status == null) {
+    return true;
+  }
+  return status === 'all' || itemElement.dataset.status === status;
+}
+
+function isMatch(itemElement, params) {
+  return (
+    isMatchSearch(itemElement, params.get('search')) &&
+    isMatchFilter(itemElement, params.get('status'))
+  );
+}
+
 (() => {
   const todoList = getTodoList();
+  const params = new URLSearchParams(window.location.search);
 
-  renderTodoList('todoList', todoList);
+  renderTodoList('todoList', todoList, params);
 
   const todoForm = document.getElementById('todoFormId');
 

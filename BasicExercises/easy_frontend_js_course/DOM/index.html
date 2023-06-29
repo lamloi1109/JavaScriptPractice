@@ -45,8 +45,22 @@
             type="text"
             class="form-control"
             aria-describedby="searchTermSpan"
+            name="searchTerm"
           />
         </div>
+        <div class="input-group mb-3">
+          <select
+            class="form-select form-select-lg mb-3"
+            id="todoFilter"
+            name="todoFilter"
+            aria-label=".form-select-lg example"
+          >
+            <option value="all">all</option>
+            <option value="pending">pending</option>
+            <option value="completed">completed</option>
+          </select>
+        </div>
+
         <ul id="todoList"></ul>
       </div>
     </section>
